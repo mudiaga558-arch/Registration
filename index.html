@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Godstime Tournament</title>
+  <style>
+    body { font-family: Arial; background: #0d1117; color: white; margin:0; padding:20px; text-align:center; }
+    .container { max-width: 500px; margin: auto; background:#161b22; padding:20px; border-radius:10px; }
+    h1 { color: #58a6ff; }
+    input, select { width: 100%; padding:10px; margin:8px 0; border-radius:5px; border:none; }
+    button { padding:10px 15px; margin:5px; border:none; border-radius:5px; cursor:pointer; font-size:16px; }
+    button:hover { opacity:0.9; }
+    #registration, #admin { display:none; }
+    table { width:100%; border-collapse: collapse; margin-top:20px; }
+    th, td { padding:10px; border:1px solid #58a6ff; text-align:center; }
+    th { background:#238636; color:white; }
+    tr:nth-child(even) { background:#161b22; }
+    .clear-btn { background:#c9184a; color:white; }
+    .clear-btn:hover { background:#ff4d6d; }
+    .switch-btn { background:#238636; color:white; }
+    .switch-btn:hover { background:#2ea043; }
+  </style>
+</head>
+<body>
+  <h1>⚽ Godstime Tournament</h1>
+
+  <div>
+      <button class="switch-btn" id="regBtn">Registration Form</button>
+      <button class="switch-btn" id="adminBtn">Admin Dashboard</button>
+  </div>
+
+  <!-- Registration Section -->
+  <div class="container" id="registration">
+      <form id="regForm">
+          <input type="text" id="name" placeholder="Full Name" required>
+          <input type="email" id="email" placeholder="Email Address" required>
+          <select id="country" required></select>
+          <input type="text" id="phone" placeholder="Phone Number" required>
+          <select id="team" required>
+              <option value="" disabled selected>Select Club/Country</option>
+              <option value="Chelsea">Chelsea</option>
+              <option value="Man U">Man U</option>
+              <option value="Man City">Man City</option>
+              <option value="Liverpool">Liverpool</option>
+              <option value="PSG">PSG</option>
+              <option value="AC Milan">AC Milan</option>
+              <option value="Real Madrid">Real Madrid</option>
+              <option value="Barcelona">Barcelona</option>
+              <option value="Arsenal">Arsenal</option>
+              <option value="Dortmund">Dortmund</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="South Africa">South Africa</option>
+              <option value="Uganda">Uganda</option>
+              <option value="Tanzania">Tanzania</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Ghana">Ghana</option>
+          </select>
+          <select id="game" required>
+              <option value="eFootball" selected>eFootball</option>
+          </select>
+          <button type="submit">Register</button>
+      </form>
+  </div>
+
+  <!-- Admin Section -->
+  <div class="container" id="admin">
+      <table id="regTable">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Country</th>
+                  <th>Phone</th>
+                  <th>Team/Club</th>
+                  <th>Game</th>
+                  <th>Date</th>
+              </tr>
+          </thead>
+          <tbody></tbody>
+      </table>
+      <button class="clear-btn" id="clearBtn">Clear All Registrations</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // Firebase setup
+    const firebaseConfig = {
+      apiKey: "AIzaSyBEwB4Wj2tGZDs1bjI0uxRuVleF_tTTMBc",
+      authDomain: "godstimetournament.firebaseapp.com",
+      databaseURL: "https://godstimetournament-default-rtdb.firebaseio.com",
+      projectId: "godstimetournament",
+      storageBucket: "godstimetournament.appspot.com",
+      messagingSenderId: "50330020920",
+      appId: "1:50330020920:web:7697029e8848f5127d8acd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Countries
+    const countries = [
+      {name: "Nigeria", code: "+234"},
+      {name: "South Africa", code: "+27"},
+      {name: "Uganda", code: "+256"},
+      {name: "Tanzania", code: "+255"},
+      {name: "Kenya", code: "+254"},
+      {name: "Ghana", code: "+233"}
+    ];
+    const countrySelect = document.getElementById("country");
+    countries.forEach(c => {
+      let opt = document.createElement("option");
+      opt.value = c.code;
+      opt.textContent = c.name;
+      countrySelect.appendChild(opt);
+    });
+    countrySelect.addEventListener("change", () => {
+      document.getElementById("phone").value = countrySelect.value;
+    });
+
+    // Sections
+    function showSection(id){
+      document.getElementById("registration").style.display = "none";
+      document.getElementById("admin").style.display = "none";
+      document.getElementById(id).style.display = "block";
+      if(id==="admin"){ loadRegistrations(); }
+    }
+
+    // Admin login
+    function adminLogin(){
+      let username = prompt("Enter Admin Username:");
+      let password = prompt("Enter Admin Password:");
+      if(username==="GT0021" && password==="Godstime@1"){
+        showSection("admin");
+      } else { alert("Wrong credentials"); }
+    }
+
+    // Button events
+    document.getElementById("regBtn").addEventListener("click", ()=>showSection("registration"));
+    document.getElementById("adminBtn").addEventListener("click", ()=>adminLogin());
+
+    // Registration submit
+    document.getElementById("regForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      const reg = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        country: countrySelect.options[countrySelect.selectedIndex].text,
+        phone: document.getElementById("phone").value,
+        team: document.getElementById("team").value,
+        game: document.getElementById("game").value,
+        date: new Date().toLocaleString()
+      };
+      db.ref("registrations").push(reg);
+      alert("Registration successful!");
+      this.reset();
+    });
+
+    // Load registrations
+    function loadRegistrations(){
+      const tbody = document.querySelector("#regTable tbody");
+      db.ref("registrations").on("value", snapshot=>{
+        tbody.innerHTML = "";
+        snapshot.forEach(child=>{
+          const r = child.val();
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${r.name}</td><td>${r.email}</td><td>${r.country}</td><td>${r.phone}</td><td>${r.team}</td><td>${r.game}</td><td>${r.date}</td>`;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    // Clear all
+    document.getElementById("clearBtn").addEventListener("click", ()=>{
+      if(confirm("Are you sure? This will delete all registrations.")){
+        db.ref("registrations").remove();
+      }
+    });
+
+    // Show registration by default
+    showSection("registration");
+  </script>
+</body>
+</html>
