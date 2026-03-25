@@ -1,0 +1,58 @@
+<h1>⚽ Godstime Tournament</h1>
+
+<div>
+    <button class="switch-btn" id="regBtn">Registration Form</button>
+    <button class="switch-btn" id="adminBtn">Admin Dashboard</button>
+</div>
+
+<!-- Registration Section -->
+<div class="container" id="registration">
+    <form id="regForm">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <select id="country" required></select>
+        <input type="text" id="phone" placeholder="Phone Number" required>
+        <select id="team" required>
+            <option value="" disabled selected>Select Club/Country</option>
+            <option value="Chelsea">Chelsea</option>
+            <option value="Man U">Man U</option>
+            <option value="Man City">Man City</option>
+            <option value="Liverpool">Liverpool</option>
+            <option value="PSG">PSG</option>
+            <option value="AC Milan">AC Milan</option>
+            <option value="Real Madrid">Real Madrid</option>
+            <option value="Barcelona">Barcelona</option>
+            <option value="Arsenal">Arsenal</option>
+            <option value="Dortmund">Dortmund</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="South Africa">South Africa</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Tanzania">Tanzania</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Ghana">Ghana</option>
+        </select>
+        <select id="game" required>
+            <option value="eFootball" selected>eFootball</option>
+        </select>
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+<!-- Admin Section -->
+<div class="container" id="admin">
+    <table id="regTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Country</th>
+                <th>Phone</th>
+                <th>Team/Club</th>
+                <th>Game</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button class="clear-btn" id="clearBtn">Clear All Registrations</button>
+</div>
